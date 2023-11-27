@@ -1,8 +1,18 @@
 #!/bin/bash
 set -x
 WORKING_DIR=$PWD
-root_path="local"
-region="demo"
+if [ $# -eq 2 ]; then
+  root_path=$1
+  region=$2
+else
+  root_path="local"
+  region="demo"
+fi
+
+if [ ! -d "$root_path/$region/hypodd" ]; then
+  mkdir -p $root_path/$region/hypodd
+fi
+
 cd $root_path/$region/hypodd
 
 if [ ! -d "HypoDD" ]; then
@@ -45,7 +55,7 @@ stations.dat
 *
 *--- output file selection
 * original locations:
-hypodd.loc
+hypodd_ct.loc
 * relocations:
 hypodd_ct.reloc
 * station information:
@@ -84,10 +94,10 @@ hypodd.src
 * DAMP:    		damping (for lsqr only) 
 *       ---  CROSS DATA ----- ----CATALOG DATA ----
 * NITER WTCCP WTCCS WRCC WDCC WTCTP WTCTS WRCT WDCT DAMP
-   4     -9     -9   -9    -9   1     1      6   10 4000 
-   4     -9     -9   -9    -9   1     1      6    8 3000 
-   4     -9     -9   -9    -9   1     1      6    6 2000 
-   4     -9     -9   -9    -9   1     1      6    4 1000 
+   4     -9     -9   -9    -9   1     1      8   -9  70 
+   4     -9     -9   -9    -9   1     1      6    4  70 
+   4     -9     -9   -9    -9   1    0.8     4    2  70 
+   4     -9     -9   -9    -9   1    0.8     3    2  70 
 *
 *--- 1D model:
 * NLAY:		number of model layers  
@@ -109,8 +119,10 @@ hypodd.src
 * ID
 EOF
 
-if [ ! -f "dt.ct" ]; then
-    ./HypoDD/src/ph2dt/ph2dt ph2dt.inp
-fi
+# if [ ! -f "dt.ct" ]; then
+#     ./HypoDD/src/ph2dt/ph2dt ph2dt.inp
+# fi
+
+./HypoDD/src/ph2dt/ph2dt ph2dt.inp
 ./HypoDD/src/hypoDD/hypoDD ct.inp
 cd $WORKING_DIR
